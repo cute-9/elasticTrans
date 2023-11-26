@@ -126,13 +126,13 @@ export default {
     };
   },
   mounted() {
-    // RecycleBinExam({
-    //   userId: "12122hhhhsoopwwd222",
-    //   title: "99882",
-    //   body: "1231",
-    // }).then((res) => {
-    //   console.log(res);
-    // });
+    RecycleBinExam({
+      userId: "12122hhhhsoopwwd222",
+      title: "99882",
+      body: "1231",
+    }).then((res) => {
+      console.log(res);
+    });
     // this.$axios({
     //   method: "post",
     //   url: "/user/12345",
