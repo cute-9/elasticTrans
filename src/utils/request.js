@@ -5,7 +5,7 @@
  */
 // 请求封装
 import axios from "axios";
-// import { Message } from 'element-ui"';
+import { Message } from "element-ui";
 let popup = true;
 let timer;
 // 请求
@@ -59,7 +59,7 @@ http.interceptors.response.use(
           window.loading.close();
         }
         if (popup) {
-          MessageBox.confirm("登录已过期，请重新登录2！", "提示", {
+          Message.confirm("登录已过期，请重新登录2！", "提示", {
             confirmButtonText: "确定",
             cancelButtonText: "取消",
             closeOnClickModal: false,
