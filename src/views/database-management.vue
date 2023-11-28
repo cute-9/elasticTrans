@@ -31,7 +31,7 @@
 export default {
   data() {
     return {
-      tableData: [{}],
+      tableData: [],
       indexMethod: 1,
       total: 0,
       currentPage: 0,

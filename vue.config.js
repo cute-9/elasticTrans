@@ -15,7 +15,7 @@ module.exports = {
   devServer: {
     proxy: {
       "/api": {
-        target: "http://jsonplaceholder.typicode.com/", // 后端接口
+        target: "http://localhost:8080/", // 后端接口
         changeOrigin: true, // 是否跨域
         pathRewrite: {
           "/api": "",
