@@ -61,6 +61,8 @@
               height="550px"
               :header-cell-style="tableHeaderStyle"
               class="contain-table"
+              @cell-click="cellClick"
+              :cell-class-name="tableCellClassName"
               border
             >
               <el-table-column label="字段名" prop="name">
@@ -88,12 +90,12 @@
                   <el-cascader
                     v-if="scope.row.show"
                     v-model="scope.row.value"
-                    :options="matchOptions"
+                    :options="numMap(scope.row.name)"
                     @change="handleChange"
                   ></el-cascader>
                 </template>
               </el-table-column>
-              <el-table-column prop="value" label="关键字">
+              <el-table-column prop="keyWord" label="关键字">
                 <template slot-scope="scope">
                   <el-input
                     v-if="scope.row.show"
@@ -131,6 +133,20 @@
           </el-form-item>
         </el-form>
       </div>
+      <el-dialog
+        v-if="dialogVisible"
+        title="查看"
+        :visible.sync="dialogVisible"
+        width="100%"
+      >
+        <tableView
+          v-if="dialogVisible"
+          :indexName="indexName"
+          :formData="formData"
+          :tableUrl="tableUrl"
+          :tableType="tableType"
+        ></tableView>
+      </el-dialog>
     </div>
   </div>
 </template>
@@ -138,7 +154,9 @@
 <script>
 import { listAllIndices } from "@/api/dataParse";
 import { listMapping, search, highSearch } from "@/api/dataQueries";
+import tableView from "./tableView.vue";
 export default {
+  components: { tableView },
   data() {
     return {
       formInline: {
@@ -168,6 +186,7 @@ export default {
           keyWord: "",
         },
       ],
+
       matchOptions: [
         {
           value: "关键词查询",
@@ -200,6 +219,12 @@ export default {
           ],
         },
       ],
+      // 弹窗传值
+      indexName: "",
+      dialogVisible: false,
+      formData: {},
+      tableUrl: "",
+      tableType: "",
     };
   },
   created() {
@@ -219,16 +244,50 @@ export default {
   },
   methods: {
     onSubmit(type) {
-      let url = type == "hight" ? highSearch : search;
-      url({ ...this.formInline, pageNum: 1, pageSize: 20 }).then((res) => {
-        console.log(res);
-        const { responseCode, responseMsg, data } = res;
-        if (responseCode == 200) {
-          this.$message.success(responseMsg);
-        } else {
-          this.$message.error(responseMsg);
-        }
-      });
+      this.tableType = type;
+      let equalsCondition = {};
+      let rangeCondition = {};
+      if (type == "hight") {
+        let tableData = JSON.parse(JSON.stringify(this.tableData));
+        tableData.pop();
+        tableData.forEach((item) => {
+          if (item?.value[0] == "关键词查询") {
+            if (item.value[1] == "模糊查询") {
+              equalsCondition[item.name] = `*${item.keyWord}*`;
+            } else {
+              equalsCondition[item.name] = item.keyWord;
+            }
+          } else {
+            if (item.value[1] == ">=") {
+              rangeCondition[item.name] = `[${item.keyWord},)`;
+            } else {
+              rangeCondition[item.name] = `(,${item.keyWord}]`;
+            }
+          }
+        });
+      }
+      // console.log(equalsCondition);
+      let data =
+        type == "hight"
+          ? {
+              indexName: this.formInlines.indexName,
+              equalsCondition,
+              rangeCondition,
+            }
+          : this.formInline;
+      this.formData = data;
+      this.indexName = data.indexName;
+      this.dialogVisible = true;
+      // console.log(equalsCondition, JSON.stringify(data), "data");
+      // url({ ...data, pageNum: 0, pageSize: 20 }).then((res) => {
+      //   console.log(res);
+      //   const { responseCode, responseMsg, data } = res;
+      //   if (responseCode == 200) {
+      //     this.$message.success(responseMsg);
+      //   } else {
+      //     this.$message.error(responseMsg);
+      //   }
+      // });
     },
     addData() {
       let length = this.tableData.length - 1;
@@ -246,6 +305,36 @@ export default {
     deleteData(id) {
       // console.log(id, "id");
       this.tableData = this.tableData.filter((obj) => obj.id != id);
+    },
+    numMap(name) {
+      let matchNum = JSON.parse(JSON.stringify(this.matchOptions));
+      let tableData = JSON.parse(JSON.stringify(this.tableData));
+      let nameNum = tableData.map((item) => {
+        return item.name;
+      });
+      // 统计字段名出现的次数
+      let obj = {};
+      for (let i = 0; i < nameNum.length; i++) {
+        if (nameNum[i]) {
+          obj[nameNum[i]] = obj[nameNum[i]] + 1 || 1;
+        }
+      }
+      // 字段名出现超过两次就禁用
+      if (obj[name] > 2) {
+        matchNum.forEach((item) => {
+          item.disabled = true;
+        });
+      } else if (obj[name] == 2) {
+        let indexs = tableData.find((currentValue) => {
+          return (currentValue.name = name);
+        });
+        matchNum.forEach((item) => {
+          if (item.value == indexs?.value[0]) {
+            item.disabled = true;
+          }
+        });
+      }
+      return matchNum;
     },
     change() {
       listMapping({
@@ -277,12 +366,17 @@ export default {
         }
       });
     },
-    tableHeaderStyle({ row, column, rowIndex, columnIndex }) {
+    tableHeaderStyle({ row, column, rowIndex }) {
       if (rowIndex === 0) {
-        return `
-   padding:0px
-       `;
+        return `padding:0px`;
       }
+    },
+    tableCellClassName({ row, column, rowIndex, columnIndex }) {
+      row.index = rowIndex;
+      column.index = columnIndex;
+    },
+    cellClick(row) {
+      console.log(row, "event");
     },
     handleChange() {},
     // lazyLoad(node, resolve) {
@@ -337,5 +431,12 @@ export default {
   ::v-deep.el-table--border ::v-deep .el-table__cell {
     border-right: 1px solid #fff !important;
   }
+}
+::v-deep .el-dialog {
+  height: 100% !important;
+  margin: 0px !important;
+}
+::v-deep .el-dialog__body {
+  // height: 80%;
 }
 </style>

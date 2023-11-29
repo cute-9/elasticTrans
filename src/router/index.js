@@ -16,7 +16,7 @@ const routes = [
       {
         path: "/dataQueries",
         name: "dataQueries",
-        component: () => import("@/views/data-queries"),
+        component: () => import("@/views/data-queries/data-queries"),
       },
       {
         path: "/dataParsing",

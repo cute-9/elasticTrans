@@ -270,7 +270,7 @@ export default {
         }
       });
     },
-    tableHeaderStyle({ row, column, rowIndex, columnIndex }) {
+    tableHeaderStyle({ row, column, rowIndex }) {
       if (rowIndex === 0) {
         return `
    padding:0px
