@@ -93,6 +93,10 @@ export default {
     },
     getInfo() {
       let url = this.tableType == "hight" ? highSearch : search;
+      const loading = this.$loading({
+        text: "加载中...",
+        spinner: "el-icon-loading",
+      });
       url({
         ...this.formData,
         pageNum: this.currentPage,
@@ -103,6 +107,7 @@ export default {
         if (responseCode == 200) {
           this.tableData = data.pageList;
           this.total = data.totalNum;
+          loading.close();
           // console.log(this.tableData)
           this.$message.success(responseMsg);
         } else {

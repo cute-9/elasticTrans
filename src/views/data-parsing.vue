@@ -86,7 +86,7 @@
           <el-button type="primary" @click="onSubmit" size="medium"
             >解析</el-button
           >
-          <el-button size="medium">取消</el-button>
+          <el-button size="medium" @click="cancel">取消</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -256,9 +256,14 @@ export default {
               break;
           }
           delete form.trans;
+          const loading = this.$loading({
+            text: "加载中...",
+            spinner: "el-icon-loading",
+          });
           url(form).then((res) => {
             const { responseCode, responseMsg } = res;
             if (responseCode == 200) {
+              loading.close();
               this.$message.success(responseMsg);
             } else {
               this.$message.error(responseMsg);
@@ -272,10 +277,11 @@ export default {
     },
     tableHeaderStyle({ row, column, rowIndex }) {
       if (rowIndex === 0) {
-        return `
-   padding:0px
-       `;
+        return `padding:0px`;
       }
+    },
+    cancel() {
+      this.$refs.form.resetFields();
     },
   },
 };
