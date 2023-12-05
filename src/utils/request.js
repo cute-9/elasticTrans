@@ -12,7 +12,7 @@ let timer;
 const http = axios.create({
   // baseURL: "http://jsonplaceholder.typicode.com/",
   // http://localhost:8080/
-  baseURL: "http://localhost:8080/",
+  baseURL: "http://192.168.0.114:8080/",
   //baseURL: "http://192.168.0.119:3001/",
   headers: { "X-Requested-With": "XMLHttpRequest" },
   timeout: 99000,

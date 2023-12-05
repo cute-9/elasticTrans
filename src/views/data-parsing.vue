@@ -94,9 +94,10 @@
       class="upload-demo"
       drag
       :http-request="httpRequest"
-      :on-change="handleChange"
+      :on-change="handlerChange"
       show-file-list
       multiple
+      :file-list="fileList"
       name="el-upload_mapinput"
       action=""
       ref="uploadFile"
@@ -115,6 +116,8 @@ import {
   listAllIndices,
   csvLine,
 } from "@/api/dataParse";
+import { uploadFilesToHdfs } from "@/api/fileQueries";
+
 export default {
   data() {
     return {
@@ -178,6 +181,7 @@ export default {
       titleData: [{}],
       selectData: [],
       titleForm: {},
+      fileList: [],
     };
   },
   created() {
@@ -282,6 +286,15 @@ export default {
     },
     cancel() {
       this.$refs.form.resetFields();
+    },
+    httpRequest(file) {
+      console.log(file, "file");
+      uploadFilesToHdfs({ path: "/image", file: file.file }).then((res) => {
+        console.log(res);
+      });
+    },
+    handlerChange(file, fileList) {
+      this.fileList = fileList;
     },
   },
 };

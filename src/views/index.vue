@@ -1,42 +1,60 @@
 <template>
-  <div>
-    <el-container>
-      <el-header>
-        <el-menu
-          :default-active="activeIndex"
-          class="el-menu-demo"
-          mode="horizontal"
-          background-color="#545c64"
-          text-color="#fff"
-          @select="handleSelect"
-          active-text-color="#ffd04b"
-        >
-          <el-menu-item index="home"> 首页</el-menu-item>
-          <el-menu-item index="databaseManagement">数据库管理 </el-menu-item>
-          <el-menu-item index="dataParsing">数据解析 </el-menu-item>
-          <el-menu-item index="dataQueries">数据查询 </el-menu-item>
-        </el-menu></el-header
+  <div class="home">
+    <!-- <el-container style="height: 100%"> -->
+    <el-header>
+      <el-menu
+        :default-active="activeIndex"
+        class="el-menu-demo"
+        mode="horizontal"
+        background-color="#545c64"
+        text-color="#fff"
+        @select="handleSelect"
+        active-text-color="#ffd04b"
       >
-      <el-container>
+        <el-menu-item index="home"> 首页</el-menu-item>
+        <el-menu-item index="databaseManagement">数据库管理 </el-menu-item>
+        <!-- <el-menu-item index="dataParsing">数据解析 </el-menu-item> -->
+        <el-menu-item index="dataQueries">数据查询 </el-menu-item>
+        <el-menu-item index="featuredApp">特色应用</el-menu-item>
+      </el-menu></el-header
+    >
+    <el-container style="height: 100%">
+      <el-aside
+        width="210px"
+        style="border-right: 1px solid #eeeeee"
+        v-if="visible"
+      >
         <el-menu
-          default-active="2"
-          class="el-menu-vertical-demo"
+          class="el-menu-vertical-demo container"
           router
-          v-if="activeIndex != 'home'"
+          :default-active="activePath"
+          @open="handleOpen"
         >
-          <el-submenu index="1">
+          <el-submenu
+            v-for="(item, index) in routeNum"
+            :key="index + item"
+            :index="item.redictRoute"
+          >
             <template slot="title">
-              <i class="el-icon-location"></i>
-              <span>数据库管理</span>
+              <i class="el-icon-menu"></i>
+              <span>{{ item.title }}</span>
             </template>
             <el-menu-item-group title="">
-              <el-menu-item index="databaseManagement">选项3</el-menu-item>
+              <el-menu-item
+                v-for="(items, indexs) in item.meteTitle"
+                :key="indexs + items"
+                :index="items.metaRoute"
+              >
+                <i class="el-icon-s-unfold"></i>
+                {{ items.title }}</el-menu-item
+              >
             </el-menu-item-group>
           </el-submenu>
         </el-menu>
-        <el-main><router-view></router-view></el-main>
-      </el-container>
+      </el-aside>
+      <el-main><router-view></router-view></el-main>
     </el-container>
+    <!-- </el-container> -->
   </div>
 </template>
 
@@ -44,18 +62,137 @@
 export default {
   name: "IndexView",
   data() {
-    return { activeIndex: "home" };
+    return {
+      activeIndex: "home",
+      visible: false,
+      // 路由
+      routeNum: [
+        {
+          title: "数据库管理",
+          redictRoute: "databaseManagement",
+          meteTitle: [
+            {
+              metaRoute: "databaseManagement",
+              title: "数据库管理",
+            },
+            {
+              metaRoute: "dataParsing",
+              title: "数据解析",
+            },
+          ],
+        },
+      ],
+    };
+  },
+  computed: {
+    activePath() {
+      return this.routeNum[0].redictRoute;
+    },
+  },
+  mounted() {
+    // this.activeIndex = "home";
+    this.$router.push("/home");
   },
   methods: {
     handleSelect(key, keyPath) {
       this.activeIndex = key;
+      const loading = this.$loading({
+        text: "加载中...",
+        spinner: "el-icon-loading",
+      });
+      this.visible = false;
+      switch (key) {
+        case "home":
+          this.visible = false;
+          setTimeout(() => {
+            loading.close();
+          }, 500);
+          this.$router.push({
+            path: key,
+          });
+          break;
+        case "databaseManagement":
+          setTimeout(() => {
+            this.visible = true;
+            loading.close();
+          }, 500);
+          this.routeNum = [
+            {
+              title: "数据库管理",
+              redictRoute: "databaseManagement",
+              meteTitle: [
+                {
+                  metaRoute: "databaseManagement",
+                  title: "数据库管理",
+                },
+                {
+                  metaRoute: "dataParsing",
+                  title: "数据解析",
+                },
+              ],
+            },
+          ];
+          this.$router.push({
+            path: key,
+          });
+          break;
+        case "dataQueries":
+          this.routeNum = [
+            {
+              title: "数据查询",
+              redictRoute: "dataQueries",
+              meteTitle: [
+                {
+                  metaRoute: "dataQueries",
+                  title: "数据查询",
+                },
+                {
+                  metaRoute: "videoQueries",
+                  title: "文件查询",
+                },
+              ],
+            },
+          ];
+          this.$router.push({
+            path: key,
+          });
+          setTimeout(() => {
+            this.visible = true;
+            loading.close();
+          }, 500);
+          break;
+        case "featuredApp":
+          this.visible = true;
+          setTimeout(() => {
+            loading.close();
+          }, 500);
+          this.routeNum = [];
+          break;
+      }
+    },
+    handleOpen(key, keyPath) {
+      console.log(key, keyPath);
     },
   },
 };
 </script>
 
-<style>
-.el-header {
-  padding: 0px !important;
+<style lang="less" scoped>
+.home {
+  position: absolute;
+  height: calc(100% - 100px);
+  width: 100%;
+  .el-header {
+    padding: 0px !important;
+  }
+  .container {
+    ::v-deep .el-menu {
+      border: 0 !important; //垂直时，去除右侧白边
+    }
+  }
+}
+
+::v-deep .el-menu {
+  border: 0 !important; //垂直时，去除右侧白边
 }
 </style>
