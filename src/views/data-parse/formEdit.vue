@@ -1,7 +1,7 @@
 <!-- 数据解析 -->
 <template>
   <div>
-    <p style="text-align: center">数据解析</p>
+    <!-- <p style="text-align: center">数据解析</p> -->
     <div class="form-contain">
       <el-form
         ref="form"
@@ -52,7 +52,7 @@
               :key="item + index"
               :prop="item"
               width="120px"
-              ><template slot="header" slot-scope="scope">
+              ><template slot="header">
                 <el-input
                   validate-event
                   v-model="titleForm[item]"
@@ -260,14 +260,15 @@ export default {
               break;
           }
           delete form.trans;
-          const loading = this.$loading({
-            text: "加载中...",
-            spinner: "el-icon-loading",
-          });
+          // const loading = this.$loading({
+          //   text: "加载中...",
+          //   spinner: "el-icon-loading",
+          // });
           url(form).then((res) => {
             const { responseCode, responseMsg } = res;
             if (responseCode == 200) {
-              loading.close();
+              // loading.close();
+              this.$emit("handleClose");
               this.$message.success(responseMsg);
             } else {
               this.$message.error(responseMsg);
@@ -285,7 +286,7 @@ export default {
       }
     },
     cancel() {
-      this.$refs.form.resetFields();
+      this.$emit("handleClose");
     },
     httpRequest(file) {
       console.log(file, "file");
@@ -302,8 +303,7 @@ export default {
 
 <style lang="less" scoped>
 .form-contain {
-  width: 50%;
-  min-width: 600px;
+  width: 100%;
   margin: 0 auto;
   ::v-deep .el-table .el-table__cell {
     padding: 20px 0;

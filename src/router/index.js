@@ -27,7 +27,7 @@ const routes = [
       {
         path: "/dataParsing",
         name: "dataParsing",
-        component: () => import("@/views/data-parsing"),
+        component: () => import("@/views/data-parse/index"),
         meta: {
           activeMenu: "/dataParsing",
         },

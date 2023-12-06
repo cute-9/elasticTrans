@@ -12,10 +12,11 @@ let timer;
 const http = axios.create({
   // baseURL: "http://jsonplaceholder.typicode.com/",
   // http://localhost:8080/
-  baseURL: "http://192.168.0.114:8080/",
+  // baseURL: "http://192.168.0.114:8080/",
+  baseURL: "http://192.168.0.110:8080/",
   //baseURL: "http://192.168.0.119:3001/",
   headers: { "X-Requested-With": "XMLHttpRequest" },
-  timeout: 99000,
+  timeout: 5000,
 });
 // 请求拦截
 http.interceptors.request.use(
@@ -74,7 +75,7 @@ http.interceptors.response.use(
               }
               const hash = window.top.location.hash;
               if (hash) {
-                const len = window.top.location.href.indexOf(hash);
+                // const len = window.top.location.href.indexOf(hash);
               }
             })
             .catch(() => {

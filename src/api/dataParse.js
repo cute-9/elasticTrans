@@ -18,7 +18,8 @@ export function csvFoldToEs(data) {
     method: "POST",
     data,
   });
-}export function csvDeepFoldToEs(data) {
+}
+export function csvDeepFoldToEs(data) {
   return request({
     url: `dataTrans/csvDeepFoldToEs`,
     method: "POST",
@@ -36,5 +37,29 @@ export function csvLine(params) {
     url: `dataTrans/csvLine`,
     method: "POST",
     params,
+  });
+}
+// 获取信息
+export function getAll(params) {
+  return request({
+    url: `task/getAll`,
+    method: "get",
+    params,
+  });
+}
+// 删除
+export function deleteInfo(params) {
+  return request({
+    url: `/task/delete`,
+    method: "delete",
+    params,
+  });
+}
+// 重启
+export function rerunInfo(data) {
+  return request({
+    url: `task/rerun`,
+    method: "post",
+    data,
   });
 }

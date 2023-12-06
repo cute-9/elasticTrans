@@ -52,7 +52,7 @@
           </el-submenu>
         </el-menu>
       </el-aside>
-      <el-main><router-view></router-view></el-main>
+      <el-main class="el-content-main"><router-view></router-view></el-main>
     </el-container>
     <!-- </el-container> -->
   </div>
@@ -187,8 +187,13 @@ export default {
   }
   .container {
     ::v-deep .el-menu {
+      height: 100%;
       border: 0 !important; //垂直时，去除右侧白边
     }
+  }
+  .el-content-main {
+    height: 100%;
+    // background-color: red;
   }
 }
 

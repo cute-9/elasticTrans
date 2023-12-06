@@ -5,7 +5,7 @@
       <i class="el-icon-refresh-right"></i>
       返回</el-button
     >
-    <el-button type="primary" size="mini" @click="backClick">
+    <el-button type="primary" size="mini" @click="addClick">
       <i class="el-icon-circle-plus-outline"></i>
       新增</el-button
     >
@@ -66,13 +66,19 @@
       :total="total"
     >
     </el-pagination>
+    <el-dialog v-if="dialogVisible" title="新增" :visible.sync="dialogVisible">
+      <formEdit @handleClose="handleClose" />
+    </el-dialog>
   </div>
 </template>
 
 <script>
-import { getHdfsCatalog, getHdfsFilePlay } from "@/api/fileQueries";
-import { Loading } from "element-ui";
+import { getHdfsCatalog, deleteHdfsPath } from "@/api/fileQueries";
+import formEdit from "./formEdit.vue";
 export default {
+  components: {
+    formEdit,
+  },
   data() {
     return {
       tableData: [],
@@ -85,6 +91,7 @@ export default {
       Loading: true,
       fileUrl: "",
       docPath: "",
+      dialogVisible: false,
     };
   },
   created() {
@@ -107,6 +114,10 @@ export default {
         }
       });
     },
+    handleClose() {
+      this.dialogVisible = false;
+      this.getInfo();
+    },
     handleSizeChange(val) {
       this.pageSize = val;
       this.getInfo(this.docPath);
@@ -117,8 +128,30 @@ export default {
     },
     btnClick(row, type) {
       console.log(row);
-      this.docPath = row.docPath;
-      if (row.isFile) {
+      if (type == "delete") {
+        this.$confirm("此操作将永久删除该文件, 是否继续?", "提示", {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning",
+        })
+          .then(() => {
+            deleteHdfsPath({ path: row.docPath }).then((res) => {
+              const { responseCode, responseMsg } = res;
+              if (responseCode == 200) {
+                this.$message.success(responseMsg);
+                this.getInfo(this.docPath);
+              } else {
+                this.$message.error(responseMsg);
+              }
+            });
+          })
+          .catch(() => {
+            this.$message({
+              type: "info",
+              message: "已取消删除",
+            });
+          });
+      } else if (row.isFile) {
         switch (type) {
           case "view":
             window.open(
@@ -126,12 +159,15 @@ export default {
               "_blank"
             );
             break;
+          // 下载
           case "down":
             window.open(row.downLoadPath, "_blank");
             break;
         }
       } else {
+        // 返回按钮
         this.visible = true;
+        this.docPath = row.docPath;
         this.getInfo(row.docPath);
       }
     },
@@ -140,6 +176,9 @@ export default {
       this.pageSize = 20;
       this.currentPage = 1;
       this.getInfo();
+    },
+    addClick() {
+      this.dialogVisible = true;
     },
   },
 };
