@@ -56,10 +56,10 @@ export function deleteInfo(params) {
   });
 }
 // 重启
-export function rerunInfo(data) {
+export function rerunInfo(params) {
   return request({
     url: `task/rerun`,
     method: "post",
-    data,
+    params,
   });
 }

@@ -31,7 +31,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column prop="address" label="操作" width="220" align="center">
+      <el-table-column prop="" label="操作" width="220" align="center">
         <template slot-scope="scope">
           <el-button
             type="primary"
