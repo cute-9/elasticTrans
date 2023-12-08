@@ -1,6 +1,6 @@
 <!-- 数据库管理 -->
 <template>
-  <div v-loading="Loading">
+  <div v-loading="Loading" class="content">
     <el-button type="primary" size="mini" v-if="visible" @click="backClick">
       <i class="el-icon-refresh-right"></i>
       返回</el-button
@@ -10,7 +10,8 @@
       新增</el-button
     >
 
-    <el-table :data="tableData" height="700px" border class="table">
+    <el-table :data="tableData" height="700" border class="table">
+      >
       <el-table-column
         type="index"
         width="50"
@@ -18,26 +19,30 @@
         :index="indexMethod"
       >
       </el-table-column>
-      <el-table-column prop="docName" label="文件名"> </el-table-column
-      ><el-table-column prop="downLoadPath" label="文件地址"> </el-table-column>
-      <el-table-column
-        prop="name"
-        label="是否是文件"
-        width="100"
-        align="center"
-      >
+      <el-table-column prop="docName" label="文件名" width="200">
+      </el-table-column
+      ><el-table-column prop="downLoadPath" label="路径"> </el-table-column>
+      <el-table-column prop="name" label="路径类型" width="100" align="center">
         <template slot-scope="scope">
-          <p>{{ scope.row.isFile ? "是" : "否" }}</p>
+          <p>{{ scope.row.isFile ? "文件" : "文件夹" }}</p>
         </template>
       </el-table-column>
 
       <el-table-column prop="" label="操作" width="220" align="center">
         <template slot-scope="scope">
           <el-button
-            type="primary"
+            v-if="scope.row.isFile"
+            type="success"
             size="mini"
             @click="btnClick(scope.row, 'view')"
             >查看</el-button
+          >
+          <el-button
+            v-if="!scope.row.isFile"
+            type="warning"
+            size="mini"
+            @click="btnClick(scope.row, 'show')"
+            >展开</el-button
           >
           <el-button
             :disabled="!scope.row.isFile"
@@ -109,6 +114,11 @@ export default {
         const { data, responseCode } = res;
         this.Loading = false;
         if (responseCode == 200) {
+          data.pageList.forEach((item) => {
+            if (!item.isFile) {
+              item["hasChildren"] = true;
+            }
+          });
           this.tableData = data.pageList;
           this.total = data.totalNum;
         }
@@ -125,6 +135,25 @@ export default {
     handleCurrentChange(val) {
       this.currentPage = val;
       this.getInfo(this.docPath);
+    },
+    load(tree, treeNode, resolve) {
+      console.log(tree, "tree");
+      let tableData = [];
+      getHdfsCatalog({
+        path: tree.docPath,
+      }).then((res) => {
+        const { data, responseCode } = res;
+        this.Loading = false;
+        if (responseCode == 200) {
+          data.pageList.forEach((item) => {
+            if (!item.isFile) {
+              item["hasChildren"] = true;
+            }
+          });
+          tableData = data.pageList;
+          resolve(tableData);
+        }
+      });
     },
     btnClick(row, type) {
       console.log(row);
@@ -152,11 +181,15 @@ export default {
             });
           });
       } else if (row.isFile) {
+        var iTop = (screen.height - 622) / 2; //获得窗口的垂直位置;
+        var iLeft = (screen.width - 1000) / 2; //获得窗口的水平位置;
+        console.log(iLeft, "ileft");
         switch (type) {
           case "view":
             window.open(
-              `http://192.168.0.114:8080/hdfs/getHdfsFilePlay?path=${row.docPath}`,
-              "_blank"
+              `http://192.168.0.110:8080/hdfs/getHdfsFilePlay?path=${row.docPath}`,
+              "_blank",
+              `height=622, width=1000 top=${iTop},left=${iLeft},toolbar=no, menubar=no, scrollbars=no, resizable=no,location=no, status=no `
             );
             break;
           // 下载
@@ -185,8 +218,12 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.table {
-  width: 100%;
-  margin-top: 10px;
+.content {
+  height: 100%;
+  .table {
+    width: 100%;
+    // height: calc(100% - 100px);
+    margin-top: 10px;
+  }
 }
 </style>

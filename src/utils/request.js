@@ -16,7 +16,7 @@ const http = axios.create({
   baseURL: "http://192.168.0.110:8080/",
   //baseURL: "http://192.168.0.119:3001/",
   headers: { "X-Requested-With": "XMLHttpRequest" },
-  timeout: 5000,
+  timeout: 50000,
 });
 // 请求拦截
 http.interceptors.request.use(

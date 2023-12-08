@@ -1,6 +1,6 @@
 <template>
   <div class="content">
-    <el-table :data="tableData" height="100%" border>
+    <el-table :data="tableData" height="100%" border class="table">
       <el-table-column
         type="index"
         width="50"
@@ -101,19 +101,24 @@ export default {
         ...this.formData,
         pageNum: this.currentPage,
         pageSize: this.pageSize,
-      }).then((res) => {
-        // console.log(res);
-        const { responseCode, responseMsg, data } = res;
-        if (responseCode == 200) {
-          this.tableData = data.pageList;
-          this.total = data.totalNum;
+      })
+        .then((res) => {
+          // console.log(res);
+          const { responseCode, responseMsg, data } = res;
+          if (responseCode == 200) {
+            this.tableData = data.pageList;
+            this.total = data.totalNum;
+            loading.close();
+            // console.log(this.tableData)
+            this.$message.success(responseMsg);
+          } else {
+            this.$message.error(responseMsg);
+          }
+        })
+        .catch((err) => {
           loading.close();
-          // console.log(this.tableData)
-          this.$message.success(responseMsg);
-        } else {
-          this.$message.error(responseMsg);
-        }
-      });
+          console.log(err);
+        });
     },
     handleSizeChange(val) {
       // console.log(`每页 ${val} 条`);
@@ -133,5 +138,8 @@ export default {
 .content {
   width: 100%;
   height: 80vh;
+  .table {
+    height: calc(100% - 200px);
+  }
 }
 </style>

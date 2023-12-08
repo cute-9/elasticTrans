@@ -71,7 +71,7 @@
             <el-table
               :data="tableData"
               style="min-width: 400px"
-              height="550px"
+              height="450px"
               :header-cell-style="tableHeaderStyle"
               class="contain-table"
               @cell-click="cellClick"
@@ -379,6 +379,22 @@ export default {
     },
     // 数据类型选完后对字段名的一个处理
     change() {
+      this.tableData = [
+        {
+          id: "1",
+          name: "",
+          value: "",
+          show: true,
+          keyWord: "",
+        },
+        {
+          id: "2",
+          show: false,
+          name: "",
+          value: "",
+          keyWord: "",
+        },
+      ];
       listMapping({
         indexName: this.formInlines.indexName,
       }).then((res) => {

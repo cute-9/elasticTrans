@@ -10,6 +10,7 @@
   "dependencies": {
     "axios": "^0.27.2",
     "core-js": "^3.8.3",
+    "echarts": "^5.4.3",
     "element-ui": "^2.15.14",
     "is-electron": "^2.2.2",
     "qs": "^6.11.2",

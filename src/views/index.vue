@@ -18,7 +18,7 @@
         <el-menu-item index="featuredApp">特色应用</el-menu-item>
       </el-menu></el-header
     >
-    <el-container style="height: 100%">
+    <el-container style="height: 100%" v-loading="loading">
       <el-aside
         width="210px"
         style="border-right: 1px solid #eeeeee"
@@ -52,7 +52,9 @@
           </el-submenu>
         </el-menu>
       </el-aside>
-      <el-main class="el-content-main"><router-view></router-view></el-main>
+      <el-main :class="[visible ? 'el-content-main' : 'el-content-mains']"
+        ><router-view></router-view
+      ></el-main>
     </el-container>
     <!-- </el-container> -->
   </div>
@@ -65,15 +67,16 @@ export default {
     return {
       activeIndex: "home",
       visible: false,
+      loading: false,
       // 路由
       routeNum: [
         {
-          title: "数据库管理",
+          title: "索引管理",
           redictRoute: "databaseManagement",
           meteTitle: [
             {
               metaRoute: "databaseManagement",
-              title: "数据库管理",
+              title: "索引管理",
             },
             {
               metaRoute: "dataParsing",
@@ -96,17 +99,18 @@ export default {
   methods: {
     handleSelect(key, keyPath) {
       this.activeIndex = key;
-      const loading = this.$loading({
-        text: "加载中...",
-        spinner: "el-icon-loading",
-      });
+      // const loading = this.$loading({
+      //   text: "加载中...",
+      //   spinner: "el-icon-loading",
+      // });
+      this.loading = true;
       this.visible = false;
       switch (key) {
         case "home":
           this.visible = false;
           setTimeout(() => {
-            loading.close();
-          }, 500);
+            this.loading = false;
+          }, 200);
           this.$router.push({
             path: key,
           });
@@ -114,7 +118,7 @@ export default {
         case "databaseManagement":
           setTimeout(() => {
             this.visible = true;
-            loading.close();
+            this.loading = false;
           }, 500);
           this.routeNum = [
             {
@@ -123,7 +127,7 @@ export default {
               meteTitle: [
                 {
                   metaRoute: "databaseManagement",
-                  title: "数据库管理",
+                  title: "索引管理",
                 },
                 {
                   metaRoute: "dataParsing",
@@ -158,14 +162,14 @@ export default {
           });
           setTimeout(() => {
             this.visible = true;
-            loading.close();
+            this.loading = false;
           }, 500);
           break;
         case "featuredApp":
           this.visible = true;
           setTimeout(() => {
-            loading.close();
-          }, 500);
+            this.loading = false;
+          }, 200);
           this.routeNum = [];
           break;
       }
@@ -180,7 +184,7 @@ export default {
 <style lang="less" scoped>
 .home {
   position: absolute;
-  height: calc(100% - 100px);
+  height: calc(100% - 60px);
   width: 100%;
   .el-header {
     padding: 0px !important;
@@ -193,7 +197,12 @@ export default {
   }
   .el-content-main {
     height: 100%;
+
     // background-color: red;
+  }
+  .el-content-mains {
+    height: 100%;
+    padding: 0px;
   }
 }
 
