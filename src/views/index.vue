@@ -110,7 +110,7 @@ export default {
           this.visible = false;
           setTimeout(() => {
             this.loading = false;
-          }, 200);
+          }, 500);
           this.$router.push({
             path: key,
           });
