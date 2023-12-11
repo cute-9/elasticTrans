@@ -1,25 +1,43 @@
 <template>
   <div class="add-content" v-loading="Loading">
-    <el-form ref="form" :model="form" label-width="80px" :rules="formRules">
+    <el-form ref="form" :model="form" label-width="130px" :rules="formRules">
       <el-form-item label="新增类型">
-        <el-select v-model="form.value" placeholder="请选择新增类型">
-          <el-option label="新增文件地址" value="1">新增文件地址</el-option>
-          <el-option label="上传文件" value="2">上传文件</el-option>
+        <el-select v-model="form.value" placeholder="请选择新增类型" disabled>
+          <el-option label="新增目录" value="directory">新增目录</el-option>
+          <el-option label="上传文件" value="add">上传文件/文件夹</el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="文件名" v-show="form.value == '1'" prop="path">
+      <el-form-item label="目录地址" v-show="addType == 'directory'">
         <el-input
-          v-model="form.path"
-          placeholder="请输入文件名，例如：/path"
+          v-model="form.pathLocal"
+          placeholder="请输入目录名称，例如：path"
+          :disabled="true"
         ></el-input>
       </el-form-item>
-      <el-form-item label="文件夹" v-show="form.value == '2'" prop="path">
+      <el-form-item
+        label="目录名称"
+        v-show="addType == 'directory'"
+        prop="path"
+      >
         <el-input
           v-model="form.path"
-          placeholder="请输入文件名,例如/path"
+          placeholder="请输入目录名称，例如：path"
         ></el-input>
       </el-form-item>
-      <el-form-item label="文件地址" v-show="form.value == '2'" prop="path">
+      <el-form-item label="当前目录地址" v-show="addType == 'add'">
+        <el-input
+          v-model="form.pathLocal"
+          placeholder="请输入文件名,例如path"
+          disabled
+        ></el-input>
+      </el-form-item>
+      <!-- <el-form-item label="目录名称" v-show="addType == 'add'" prop="path">
+        <el-input
+          v-model="form.path"
+          placeholder="请输入目录名称,例如path"
+        ></el-input>
+      </el-form-item> -->
+      <el-form-item label="本地文件路径" v-show="addType == 'add'" prop="path">
         <el-input
           v-model="form.localFolderPath"
           placeholder="请输入文件地址"
@@ -36,10 +54,21 @@
 <script>
 import { uploadFilesToHdfs, createHdfsDirectory } from "@/api/fileQueries";
 export default {
+  props: {
+    docPath: {
+      type: String,
+      default: "/",
+    },
+    addType: {
+      type: String,
+      default: "",
+    },
+  },
   data() {
     return {
       form: {
-        value: "1",
+        value: "",
+        pathLocal: "/",
         path: "",
         localFolderPath: "",
       },
@@ -62,16 +91,33 @@ export default {
       Loading: false,
     };
   },
+  mounted() {
+    this.form.value = this.addType;
+    this.form.pathLocal = this.docPath ? this.docPath + "/" : "/";
+  },
+  watch: {
+    "form.path": {
+      handler(newValue) {
+        this.form.pathLocal = `${
+          this.docPath ? this.docPath + "/" : "/"
+        }${newValue}`;
+      },
+      deep: true,
+    },
+  },
   methods: {
     onSubmit() {
-      let url = this.form.value == 1 ? createHdfsDirectory : uploadFilesToHdfs;
+      let url =
+        this.form.value == "directory"
+          ? createHdfsDirectory
+          : uploadFilesToHdfs;
       let params =
-        this.form.value == 1
+        this.form.value == "directory"
           ? {
-              path: this.form.path,
+              path: this.form.pathLocal,
             }
           : {
-              path: this.form.path,
+              path: this.docPath,
               localFolderPath: encodeURIComponent(this.form.localFolderPath),
             };
       this.Loading = true;

@@ -6,16 +6,16 @@
           <el-tab-pane label="" name="first"></el-tab-pane>
           <el-tab-pane label="装备状态预览" name="second"></el-tab-pane>
         </el-tabs>
-        <pieEcharts />
+        <div class="pie"><pieEcharts /></div>
       </div>
       <div class="right">
         <el-tabs v-model="activeName" style="width: 170px">
           <el-tab-pane label="" name="first"></el-tab-pane>
           <el-tab-pane label="飞行讲评系统" name="second"></el-tab-pane>
         </el-tabs>
-        <div style="width: 100%">
-          <img src="../assets/video.png" class="img" />
-        </div>
+        <!-- <div style="width: 100%"> -->
+        <img src="../assets/video.png" class="img" />
+        <!-- </div> -->
       </div>
     </div>
     <div class="content-footer">
@@ -25,7 +25,10 @@
           <el-tab-pane label="任务机推荐" name="second"></el-tab-pane>
         </el-tabs>
         <div class="mission-machine">
-          <el-tabs tab-position="left" style="height: 100%; width: 110px">
+          <el-tabs
+            tab-position="left"
+            style="height: calc(100% - 58px); width: 110px"
+          >
             <el-tab-pane label="状态">
               <span slot="label"
                 ><i class="el-icon-s-home"></i> 状态</span
@@ -40,11 +43,16 @@
               >
             </el-tab-pane>
           </el-tabs>
-          <lineEcharts />
-          <el-carousel style="width: 280px; height: 370px" arrow="always">
-            <el-carousel-item style="width: 280px; height: 370px">
+          <div class="pie">
+            <lineEcharts />
+          </div>
+          <el-carousel
+            style="min-width: 280px; height: calc(100% - 55px)"
+            arrow="always"
+          >
+            <el-carousel-item style="width: 280px; height: 100%">
               <img
-                style="width: 280px; height: 370px"
+                style="width: 280px; height: 100%"
                 src="../assets/歼-15.png"
               />
             </el-carousel-item>
@@ -56,7 +64,7 @@
           <el-tab-pane label="" name="first"></el-tab-pane>
           <el-tab-pane label="故障分析类比系统" name="second"></el-tab-pane>
         </el-tabs>
-        <div>
+        <div class="right-footer">
           <!-- 表格 -->
           <div class="tableLine">
             <div
@@ -70,12 +78,7 @@
               <span>{{ item.title }}</span>
             </div>
             <div class="tables">
-              <el-table
-                :data="tableData"
-                border
-                v-if="visible"
-                max-height="290px"
-              >
+              <el-table :data="tableData" border v-if="visible">
                 <el-table-column prop="date" label="机型"> </el-table-column>
                 <el-table-column prop="date1" label="J15"> </el-table-column>
                 <el-table-column prop="date2" label="编号"> </el-table-column>
@@ -94,14 +97,15 @@
               </div>
             </div>
           </div>
+
+          <el-pagination
+            style="text-align: center; margin-top: 10px"
+            background
+            layout="prev, pager, next"
+            :total="1000"
+          >
+          </el-pagination>
         </div>
-        <el-pagination
-          style="text-align: center; margin-top: 10px"
-          background
-          layout="prev, pager, next"
-          :total="1000"
-        >
-        </el-pagination>
       </div>
     </div>
   </div>
@@ -168,9 +172,14 @@ export default {
     height: 40%;
     display: flex;
     justify-content: space-around;
+    // background-color: red;
     .left {
       // height: 0%;
       // flex: 1;
+      .pie {
+        position: relative;
+        height: calc(100% - 80px);
+      }
       .mission-machine {
         height: 100%;
         display: flex;
@@ -186,19 +195,26 @@ export default {
     .right {
       width: 50%;
       margin-left: 65px;
+      height: 100%;
+      .img {
+        height: calc(100% - 80px);
+      }
     }
   }
   .content-footer {
-    flex: 1;
+    height: 60%;
     display: flex;
     justify-content: space-around;
+    .pie {
+      position: relative;
+      height: calc(100% - 5px);
+    }
     .left-footer {
       // flex: 1;
       // background-color: red;
       .mission-machine {
-        // height: 100%;
+        height: calc(100% - 70px);
         display: flex;
-        // background-color: red;
         ::v-deep .el-tabs__item {
           color: #fff;
           padding: 5px;
@@ -206,15 +222,35 @@ export default {
         ::v-deep .el-tabs__item.is-active {
           color: #409eff;
         }
+
+        ::v-deep .el-tabs--left .el-tabs__item.is-left {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          height: 100%;
+          background-color: #358a96;
+          border-bottom: 1px solid #ccc;
+        }
+
+        ::v-deep .el-tabs--left .el-tabs__nav.is-left {
+          height: 33.3% !important;
+        }
+        ::v-deep .el-carousel__container {
+          height: 100%;
+        }
       }
     }
     .right {
       width: 50%;
+      height: 100%;
+      .right-footer {
+        height: calc(100% - 70px);
+      }
       .tableLine {
-        height: 370px;
+        height: calc(100% - 55px);
         overflow-y: auto;
         overflow-x: hidden;
-        // background-color: red;
+        // border: 1px solid #fff;
         .line {
           width: 100%;
           background-color: white;
@@ -226,7 +262,7 @@ export default {
           position: relative;
         }
         .mask {
-          height: 290px;
+          height: 100%;
           position: absolute;
           top: 0;
           bottom: 0px;
@@ -246,15 +282,6 @@ export default {
         }
       }
     }
-  }
-
-  ::v-deep .el-tabs--left .el-tabs__item.is-left {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 123px;
-    background-color: #358a96;
-    border-bottom: 1px solid #ccc;
   }
   ::v-deep .el-tabs__item {
     color: #fff;

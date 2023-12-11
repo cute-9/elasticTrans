@@ -1,5 +1,5 @@
 <template>
-  <div id="line" style="height: 420px; width: 280px"></div>
+  <div id="line" style="height: 100%; min-width: 280px"></div>
 </template>
 
 <script>

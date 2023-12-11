@@ -4,10 +4,13 @@
     <el-button type="primary" size="mini" v-if="visible" @click="backClick">
       <i class="el-icon-refresh-right"></i>
       返回</el-button
-    >
-    <el-button type="primary" size="mini" @click="addClick">
+    ><el-button type="primary" size="mini" @click="addClick('directory')">
       <i class="el-icon-circle-plus-outline"></i>
-      新增</el-button
+      新增目录</el-button
+    >
+    <el-button type="primary" size="mini" @click="addClick('add')">
+      <i class="el-icon-circle-plus-outline"></i>
+      上传文件</el-button
     >
 
     <el-table :data="tableData" height="700" border class="table">
@@ -72,7 +75,11 @@
     >
     </el-pagination>
     <el-dialog v-if="dialogVisible" title="新增" :visible.sync="dialogVisible">
-      <formEdit @handleClose="handleClose" />
+      <formEdit
+        @handleClose="handleClose"
+        :docPath="docPath"
+        :addType="addType"
+      />
     </el-dialog>
   </div>
 </template>
@@ -97,10 +104,13 @@ export default {
       fileUrl: "",
       docPath: "",
       dialogVisible: false,
+      // 新增类型
+      addType: "",
     };
   },
   created() {
     this.getInfo();
+    console.log(this.$axios);
   },
   methods: {
     getInfo(data) {
@@ -110,23 +120,28 @@ export default {
         pageNum: this.currentPage,
         pageSize: this.pageSize,
       };
-      getHdfsCatalog(params).then((res) => {
-        const { data, responseCode } = res;
-        this.Loading = false;
-        if (responseCode == 200) {
-          data.pageList.forEach((item) => {
-            if (!item.isFile) {
-              item["hasChildren"] = true;
-            }
-          });
-          this.tableData = data.pageList;
-          this.total = data.totalNum;
-        }
-      });
+      getHdfsCatalog(params)
+        .then((res) => {
+          const { data, responseCode } = res;
+          this.Loading = false;
+          if (responseCode == 200) {
+            data.pageList.forEach((item) => {
+              if (!item.isFile) {
+                item["hasChildren"] = true;
+              }
+            });
+            this.tableData = data.pageList;
+            this.total = data.totalNum;
+          }
+        })
+        .catch(() => {
+          this.Loading = false;
+          this.$message.error("网络错误，请稍后重试！");
+        });
     },
     handleClose() {
       this.dialogVisible = false;
-      this.getInfo();
+      this.getInfo(this.docPath);
     },
     handleSizeChange(val) {
       this.pageSize = val;
@@ -187,7 +202,7 @@ export default {
         switch (type) {
           case "view":
             window.open(
-              `http://192.168.0.110:8080/hdfs/getHdfsFilePlay?path=${row.docPath}`,
+              `${window.serverconfig.ip}hdfs/getHdfsFilePlay?path=${row.docPath}`,
               "_blank",
               `height=622, width=1000 top=${iTop},left=${iLeft},toolbar=no, menubar=no, scrollbars=no, resizable=no,location=no, status=no `
             );
@@ -208,9 +223,11 @@ export default {
       this.visible = false;
       this.pageSize = 20;
       this.currentPage = 1;
+      this.docPath = "";
       this.getInfo();
     },
-    addClick() {
+    addClick(type) {
+      this.addType = type;
       this.dialogVisible = true;
     },
   },

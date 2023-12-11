@@ -1,5 +1,5 @@
 <template>
-  <div id="pie" style="height: 300px; width: 600px"></div>
+  <div id="pie" style="height: 100%; width: 600px"></div>
 </template>
 
 <script>

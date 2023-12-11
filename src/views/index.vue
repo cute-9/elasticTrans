@@ -15,7 +15,7 @@
         <el-menu-item index="databaseManagement">数据库管理 </el-menu-item>
         <!-- <el-menu-item index="dataParsing">数据解析 </el-menu-item> -->
         <el-menu-item index="dataQueries">数据查询 </el-menu-item>
-        <el-menu-item index="featuredApp">特色应用</el-menu-item>
+        <el-menu-item index="feature">特色应用</el-menu-item>
       </el-menu></el-header
     >
     <el-container style="height: 100%" v-loading="loading">
@@ -165,12 +165,14 @@ export default {
             this.loading = false;
           }, 500);
           break;
-        case "featuredApp":
-          this.visible = true;
+        case "feature":
+          this.visible = false;
           setTimeout(() => {
             this.loading = false;
-          }, 200);
-          this.routeNum = [];
+          }, 500);
+          this.$router.push({
+            path: key,
+          });
           break;
       }
     },

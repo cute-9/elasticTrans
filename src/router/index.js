@@ -48,6 +48,14 @@ const routes = [
           activeMenu: "/videoQueries",
         },
       },
+      {
+        path: "/feature",
+        name: "feature",
+        component: () => import("@/views/feature"),
+        meta: {
+          activeMenu: "/feature",
+        },
+      },
     ],
   },
 ];
