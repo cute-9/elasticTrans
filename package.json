@@ -1,7 +1,10 @@
 {
-  "name": "project-01",
+  "name": "project",
   "version": "0.1.0",
   "private": true,
+  "license":"project",
+  "author": "cute<hhuangq@outlook>",
+  "homepage": "http://qq.com",
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
@@ -40,9 +43,7 @@
     "eslint-plugin-vue": "^8.0.3",
     "less": "^4.2.0",
     "less-loader": "^5.0.0",
-    "prettier": "^2.4.1",
-    "vue-cli-plugin-electron-builder": "~2.1.1",
-    "vue-template-compiler": "^2.6.14"
+    "prettier": "^2.4.1"
   },
   "eslintConfig": {
     "root": true,
