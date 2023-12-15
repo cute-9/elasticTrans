@@ -1,6 +1,6 @@
 <template>
   <div class="content">
-    <el-table :data="tableData" height="100%" border class="table">
+    <el-table :data="tableData" border class="table">
       <el-table-column
         type="index"
         width="50"
