@@ -5,45 +5,48 @@
       <i class="el-icon-circle-plus-outline"></i>
       新增</el-button
     >
-    <el-table :data="tableData" border class="table">
-      <el-table-column
-        type="index"
-        width="50"
-        label="序号"
-        :index="indexMethod"
-      >
-      </el-table-column>
-      <el-table-column prop="taskName" label="任务名称"> </el-table-column>
-      <el-table-column prop="taskType" label="任务类型"> </el-table-column>
-      <el-table-column prop="taskStateName" label="状态" align="center">
-        <template slot-scope="scope">
-          <el-tag :type="scope.row.stateType">{{
-            scope.row.taskStateName
-          }}</el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column prop="startTime" label="开始时间" align="center">
-      </el-table-column>
-      <el-table-column prop="finishTime" label="结束时间" align="center">
-      </el-table-column>
-      <el-table-column prop="" label="操作" width="220" align="center">
-        <template slot-scope="scope">
-          <el-button
-            :disabled="scope.row.taskState == 0"
-            type="primary"
-            size="mini"
-            @click="btnClick('stop', scope.row)"
-            >重新运行</el-button
-          >
-          <el-button
-            type="danger"
-            size="mini"
-            @click="btnClick('delete', scope.row)"
-            >删除</el-button
-          >
-        </template>
-      </el-table-column>
-    </el-table>
+    <div class="table">
+      <el-table :data="tableData" border height="100%">
+        <el-table-column
+          type="index"
+          width="50"
+          label="序号"
+          :index="indexMethod"
+        >
+        </el-table-column>
+        <el-table-column prop="taskName" label="任务名称"> </el-table-column>
+        <el-table-column prop="taskType" label="任务类型"> </el-table-column>
+        <el-table-column prop="taskStateName" label="状态" align="center">
+          <template slot-scope="scope">
+            <el-tag :type="scope.row.stateType">{{
+              scope.row.taskStateName
+            }}</el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column prop="startTime" label="开始时间" align="center">
+        </el-table-column>
+        <el-table-column prop="finishTime" label="结束时间" align="center">
+        </el-table-column>
+        <el-table-column prop="" label="操作" width="220" align="center">
+          <template slot-scope="scope">
+            <el-button
+              :disabled="scope.row.taskState == 0"
+              type="primary"
+              size="mini"
+              @click="btnClick('stop', scope.row)"
+              >重新运行</el-button
+            >
+            <el-button
+              type="danger"
+              size="mini"
+              @click="btnClick('delete', scope.row)"
+              >删除</el-button
+            >
+          </template>
+        </el-table-column>
+      </el-table>
+    </div>
+
     <el-pagination
       style="margin-top: 10px; text-align: center"
       @size-change="handleSizeChange"
@@ -92,9 +95,11 @@ export default {
     // 分页
     handleSizeChange(val) {
       this.pageSize = val;
+      this.getInfo();
     },
     handleCurrentChange(val) {
       this.currentPage = val;
+      this.getInfo();
     },
     // 按钮点击
     btnClick(type, row) {
